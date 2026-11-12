@@ -29,16 +29,17 @@ async def ping_device_network(ip: Optional[str], timeout_sec: float = 1.0) -> tu
         return False, 0.0
     start_t = asyncio.get_event_loop().time()
     try:
+        ping_cmd = ["ping", "-n", "1", "-w", str(int(timeout_sec * 1000)), ip] if os.name == "nt" else ["ping", "-c", "1", "-W", str(max(1, int(timeout_sec))), ip]
         proc = await asyncio.create_subprocess_exec(
-            "ping", "-n", "1", "-w", str(int(timeout_sec * 1000)), ip,
+            *ping_cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
         stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout_sec + 0.5)
         elapsed_ms = round((asyncio.get_event_loop().time() - start_t) * 1000, 1)
         out_str = stdout.decode("utf-8", errors="ignore")
-        if proc.returncode == 0 and ("TTL=" in out_str or "bytes=" in out_str):
-            m = re.search(r"time[=<]([0-9]+)ms", out_str)
+        if proc.returncode == 0 and ("TTL=" in out_str.upper() or "BYTES" in out_str.upper()):
+            m = re.search(r"time[=<]([0-9.]+)[\s]*ms", out_str, re.IGNORECASE) or re.search(r"time=([0-9.]+)", out_str)
             latency = float(m.group(1)) if m else elapsed_ms
             return True, max(1.0, latency)
         return False, 0.0
@@ -1308,6 +1309,16 @@ async def realtime_connectivity_intelligence_task():
 
         # Sleep for best-practice 15s heartbeat interval
         await asyncio.sleep(HEARTBEAT_INTERVAL_SEC)
+
+# Mount built frontend SPA static files if present (e.g. in Docker container or production dist)
+FRONTEND_STATIC_DIRS = [
+    os.path.join(os.path.dirname(__file__), "static"),
+    os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"),
+]
+for static_dir in FRONTEND_STATIC_DIRS:
+    if os.path.exists(static_dir) and os.path.isdir(static_dir):
+        app.mount("/", StaticFiles(directory=static_dir, html=True), name="frontend_spa")
+        break
 
 @app.on_event("startup")
 async def app_startup():

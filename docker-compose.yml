@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Option A: Unified All-In-One Service (Frontend + Backend on :8010)
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yhealth-fleet-dashboard
+    restart: unless-stopped
+    ports:
+      - "8010:8010"
+    environment:
+      - DASHBOARD_MODE=demo
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=postgrespassword
+      - PG_DATABASE=yhealth_db
+    volumes:
+      - ./backend/fleet_db.json:/app/backend/fleet_db.json
+      - ./backend/users_db.json:/app/backend/users_db.json
+
+# Optional: Uncomment if running PostgreSQL service alongside the dashboard
+#  postgres:
+#    image: postgres:15-alpine
+#    container_name: yhealth-postgres
+#    restart: unless-stopped
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgrespassword
+#      POSTGRES_DB: yhealth_db
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#
+# volumes:
+#   pgdata:

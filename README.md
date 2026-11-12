@@ -193,6 +193,24 @@ Speaker-Management-Dashboard/
 
 ---
 
+### 🐳 Docker Deployment (Recommended)
+
+#### Option 1: Unified All-in-One Container
+Build and run the production image (bundles the React 18 frontend and FastAPI backend into a single container on port 8010):
+\\ash
+# Build the unified image
+docker build -t yhealth-fleet-dashboard .
+
+# Run the container
+docker run -d -p 8010:8010 --name yhealth-dashboard yhealth-fleet-dashboard
+\> Access the complete dashboard and API at **\http://localhost:8010\**.
+
+#### Option 2: Docker Compose
+\\ash
+docker compose up -d
+\
+---
+
 ### 1-Click Launch (Windows)
 
 The simplest way to start both the backend API and frontend dev server simultaneously is using `start_dashboard.bat`:

@@ -12,8 +12,8 @@ import {
 } from 'lucide-react'
 import YHealthLogo from './YHealthLogo'
 
-const BACKEND_API = 'http://localhost:8010/api'
-const WS_ENDPOINT = 'ws://localhost:8010/ws/fleet'
+const BACKEND_API = import.meta.env.VITE_BACKEND_API || (window.location.port === '5173' ? 'http://localhost:8010/api' : `${window.location.origin}/api`)
+const WS_ENDPOINT = import.meta.env.VITE_WS_ENDPOINT || (window.location.port === '5173' ? 'ws://localhost:8010/ws/fleet' : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/fleet`)
 
 export default function App() {
   // Theme state: 'dark' | 'light'
