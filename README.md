@@ -193,7 +193,58 @@ Speaker-Management-Dashboard/
 
 ---
 
-### 🐳 Docker Deployment (Recommended)
+### 🌐 Production Deployment on KVM2 Server (with SSL / HTTPS)
+
+The dashboard is configured for production hosting on Linux servers (e.g., KVM2 VPS / Dedicated Instances) using **Docker Compose**, **Nginx Reverse Proxy**, and **Let\'s Encrypt Certbot** with automated renewal.
+
+`	ext
+  Internet Client (Browser / Smart Speaker)
+                    │
+            HTTPS :443 / HTTP :80
+                    ▼
+     +─────────────────────────────+
+     │   Nginx SSL Reverse Proxy   │ (TLS 1.2/1.3, HSTS, Certbot challenge)
+     +─────────────────────────────+
+          │               │
+     REST /api      WebSocket /ws/fleet
+          │               │
+          ▼               ▼
+     +─────────────────────────────+
+     │   Dashboard App Container   │ (FastAPI Backend + React 18 SPA on :8010)
+     +─────────────────────────────+
+`
+
+#### Step 1: Clone Repository on KVM2 Server
+\\ash
+git clone https://github.com/gupta-tanvi-tft/Speaker-Management-Dashboard.git
+cd Speaker-Management-Dashboard
+chmod +x init-ssl.sh
+\
+#### Step 2: Automated SSL Provisioning & Launch
+
+**With a Custom Domain (Let\'s Encrypt Auto-SSL):**
+\\ash
+# Run with your domain and administrative email
+sudo ./init-ssl.sh dashboard.yhealth.me admin@yhealth.me
+\> Automatically generates bootstrap certificates, spins up Nginx, solves the ACME HTTP-01 challenge via Certbot, installs genuine Let\'s Encrypt SSL certificates, and reloads Nginx.
+
+**With Server IP / Intranet (Self-Signed Bootstrap SSL):**
+\\ash
+# Run without arguments for immediate self-signed HTTPS
+sudo ./init-ssl.sh
+\> The dashboard will immediately be available securely at **\https://<KVM2_SERVER_IP>\**.
+
+#### Step 3: Verify Running Services
+\\ash
+docker compose ps
+\You will see three production services running:
+1. \yhealth-fleet-dashboard\: FastAPI + React 18 core application (healthy).
+2. \yhealth-fleet-nginx\: TLS 1.2/1.3 reverse proxy handling \80\ and ģ\.
+3. \yhealth-certbot\: Automatic 12-hour SSL certificate renewal daemon.
+
+---
+
+### 🐳 Local Docker Deployment
 
 #### Option 1: Unified All-in-One Container
 Build and run the production image (bundles the React 18 frontend and FastAPI backend into a single container on port 8010):
