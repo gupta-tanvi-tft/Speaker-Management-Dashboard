@@ -100,6 +100,7 @@ export default function App() {
   const [loginError, setLoginError] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [showLoginUsername, setShowLoginUsername] = useState(false)
 
   // User Management State
   const [usersList, setUsersList] = useState([])
@@ -6379,7 +6380,7 @@ export default function App() {
                 <div style={{ position: 'relative' }}>
                   <User size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
                   <input
-                    type="text"
+                    type={showLoginUsername ? "text" : "password"}
                     required
                     placeholder="Enter username"
                     autoComplete="username"
@@ -6387,7 +6388,7 @@ export default function App() {
                     onChange={e => setLoginUsername(e.target.value)}
                     style={{
                       width: '100%',
-                      padding: '10px 12px 10px 36px',
+                      padding: '10px 40px 10px 36px',
                       background: 'var(--input)',
                       border: '1px solid var(--line)',
                       borderRadius: '8px',
@@ -6395,6 +6396,27 @@ export default function App() {
                       fontSize: '13px'
                     }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginUsername(!showLoginUsername)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--muted)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title={showLoginUsername ? "Hide username" : "Show username"}
+                  >
+                    {showLoginUsername ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
               </div>
 
@@ -6405,7 +6427,7 @@ export default function App() {
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
                   <input
-                    type="password"
+                    type={showLoginPassword ? "text" : "password"}
                     required
                     placeholder="Enter security password"
                     autoComplete="current-password"
@@ -6413,7 +6435,7 @@ export default function App() {
                     onChange={e => setLoginPassword(e.target.value)}
                     style={{
                       width: '100%',
-                      padding: '10px 12px 10px 36px',
+                      padding: '10px 40px 10px 36px',
                       background: 'var(--input)',
                       border: '1px solid var(--line)',
                       borderRadius: '8px',
@@ -6421,7 +6443,50 @@ export default function App() {
                       fontSize: '13px'
                     }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'var(--muted)',
+                      cursor: 'pointer',
+                      padding: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title={showLoginPassword ? "Hide password" : "Show password"}
+                  >
+                    {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
+              </div>
+
+              {/* Show Credentials Options */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', marginTop: '-2px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={showLoginPassword}
+                    onChange={e => setShowLoginPassword(e.target.checked)}
+                    style={{ cursor: 'pointer', accentColor: '#a855f7' }}
+                  />
+                  <span>Show Password</span>
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)', cursor: 'pointer', userSelect: 'none' }}>
+                  <input
+                    type="checkbox"
+                    checked={showLoginUsername}
+                    onChange={e => setShowLoginUsername(e.target.checked)}
+                    style={{ cursor: 'pointer', accentColor: '#a855f7' }}
+                  />
+                  <span>Show Username</span>
+                </label>
               </div>
 
               <button
