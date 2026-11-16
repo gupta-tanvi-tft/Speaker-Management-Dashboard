@@ -37,7 +37,7 @@
       "wifi_status": "flashed_and_identified",
       "wifi_ssid": "TFTus-WiFi",
       "ip_address": null,
-      "assigned_name": "Dr. Brij Mohan Makkar (Unit 2 / Clinic Desk)",
+      "assigned_name": "Dr. Brij Mohan Makkar",
       "persona": "doctor_endocrinologist",
       "status": "active",
       "notes": "Speaker 2 associated with Dr. Brij Mohan Makkar (Desk). Real Hardware MAC: 28:84:85:B2:BC:B8"
@@ -56,7 +56,7 @@
       "wifi_status": "flashed_and_identified",
       "wifi_ssid": "TFTus-WiFi",
       "ip_address": null,
-      "assigned_name": "Dr. Brij Mohan Makkar (Unit 3 / Examination Desk)",
+      "assigned_name": "Dr. Brij Mohan Makkar",
       "persona": "doctor_endocrinologist",
       "status": "active",
       "notes": "Speaker 3 associated with Dr. Brij Mohan Makkar (Exam). Real Hardware MAC: 28:84:85:B2:BB:C8"
