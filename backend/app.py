@@ -1236,6 +1236,15 @@ async def send_speaker_command(device_id: str, payload: Dict[str, Any] = Body(..
         vol = max(0, min(100, int(payload.get("volume", 75))))
         apply_speaker_update(clean_id, {"volume": vol})
         await ws_manager.broadcast("speaker_updated", {**spk, "volume": vol})
+        target_mac = spk.get("mac_address") or clean_id
+        try:
+            async with httpx.AsyncClient(timeout=2.0) as client:
+                await client.post(
+                    f"http://127.0.0.1:8008/api/speakers/{target_mac}/volume",
+                    json={"volume": vol, "device_id": clean_id}
+                )
+        except Exception as e:
+            logger.debug(f"Direct hardware volume forward error: {e}")
 
     # Handle dynamic voice announcement or speech command
     if command_type in ("play_announcement", "announce", "tts", "speak"):

@@ -7,7 +7,7 @@
     "phone": "",
     "email": "",
     "status": "offline",
-    "volume": 100,
+    "volume": 50,
     "ip_address": "192.168.50.91",
     "hardware_version": "ESP32-S3-DevKitC-1",
     "firmware_version": "v1.4.2-bargein",

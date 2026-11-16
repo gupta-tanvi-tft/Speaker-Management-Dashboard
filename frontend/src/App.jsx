@@ -2583,26 +2583,6 @@ export default function App() {
                                 <Maximize2 size={12} /> Open Card
                               </button>
                               <button
-                                onClick={(e) => { e.stopPropagation(); handleOpenVoiceEnroll(spk); }}
-                                style={{
-                                  padding: '5px 10px',
-                                  borderRadius: '6px',
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  background: spk.voice_signature_active ? 'rgba(16, 185, 129, 0.18)' : 'rgba(245, 158, 11, 0.15)',
-                                  border: spk.voice_signature_active ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)',
-                                  color: spk.voice_signature_active ? '#10b981' : '#f59e0b',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '4px'
-                                }}
-                                title={spk.voice_signature_active ? `Voice signature active (${spk.voice_signature_pitch_f0 || 122} Hz) - Hardware locked` : "Enroll 3-sample biometric voice signature"}
-                              >
-                                {spk.voice_signature_active ? <ShieldCheck size={12} /> : <Fingerprint size={12} />}
-                                {spk.voice_signature_active ? 'Voice Locked' : 'Enroll Voice'}
-                              </button>
-                              <button
                                 onClick={(e) => { e.stopPropagation(); handleOpenPingModal(spk); }}
                                 style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--light-green-soft)', border: '1px solid var(--light-green-border)', color: 'var(--light-green)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                                 title="Audio Verification Ping"
@@ -2918,29 +2898,6 @@ export default function App() {
                       title="Ping hardware speaker & speak TTS audio"
                     >
                       <Zap size={14} color="var(--golden-yellow)" /> Ping & Speak
-                    </button>
-
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleOpenVoiceEnroll(spk); }}
-                      style={{
-                        flex: 1.1,
-                        padding: '8px 10px',
-                        fontSize: '12px',
-                        background: spk.voice_signature_active ? 'rgba(16, 185, 129, 0.18)' : 'rgba(245, 158, 11, 0.15)',
-                        border: spk.voice_signature_active ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)',
-                        color: spk.voice_signature_active ? '#10b981' : '#f59e0b',
-                        borderRadius: '6px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '5px',
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                      title={spk.voice_signature_active ? `Voice signature active (${spk.voice_signature_pitch_f0 || 122} Hz) - Hardware locked` : "Enroll 3-sample biometric voice signature"}
-                    >
-                      {spk.voice_signature_active ? <ShieldCheck size={14} color="#10b981" /> : <Fingerprint size={14} color="#f59e0b" />}
-                      <span>{spk.voice_signature_active ? 'Voice Locked' : 'Voice Signature'}</span>
                     </button>
 
                     <button
@@ -4555,8 +4512,8 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Quick Action Buttons: Ping Device, Ping & TTS, Live Logs, Voice Signature, USB Flash */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
+                  {/* Quick Action Buttons: Ping Device, Ping & TTS, Live Logs, USB Flash */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                     <button
                       onClick={() => handleServerPingDevice(detailSpeaker)}
                       disabled={isPingingDevice}
@@ -4624,30 +4581,6 @@ export default function App() {
                       }}
                     >
                       <FileText size={14} /> Live Logs
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setDetailSpeaker(null)
-                        handleOpenVoiceEnroll(detailSpeaker)
-                      }}
-                      style={{
-                        padding: '10px 8px',
-                        borderRadius: '8px',
-                        background: detailSpeaker.voice_signature_active ? 'rgba(16, 185, 129, 0.2)' : 'rgba(245, 158, 11, 0.2)',
-                        border: detailSpeaker.voice_signature_active ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(245, 158, 11, 0.4)',
-                        color: detailSpeaker.voice_signature_active ? '#10b981' : '#f59e0b',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px'
-                      }}
-                      title="Enroll or manage biometric voice signature"
-                    >
-                      <Fingerprint size={14} /> {detailSpeaker.voice_signature_active ? 'Voice Locked' : 'Voice Signature'}
                     </button>
 
                     <button
