@@ -146,6 +146,8 @@ def upsert_speaker(spk: Dict[str, Any]) -> Dict[str, Any]:
     status = spk.get("status", "offline")
     vol = int(spk.get("volume", 75))
     ip = spk.get("ip_address") or None
+    if ip and (ip in ("—", "-", "N/A", "none") or "." not in ip):
+        ip = None
     is_doc = (role == "doctor")
 
     doc_id = (spk.get("doctor_id") if is_doc else spk.get("doctor_assigned_id")) or None
