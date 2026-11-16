@@ -2360,93 +2360,6 @@ export default function App() {
           </div>
         </section>
 
-        {/* ========================================================================= */}
-        {/* GLOBAL ENTERPRISE FLEET TELEMETRY & AGGREGATES                             */}
-        {/* ========================================================================= */}
-        <div style={{
-          background: 'var(--panel-card)',
-          border: '1px solid var(--line)',
-          borderRadius: '12px',
-          padding: '14px 20px',
-          marginBottom: '22px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px',
-          boxShadow: 'var(--shadow-sm)'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{
-                position: 'relative',
-                display: 'flex',
-                height: '10px',
-                width: '10px'
-              }}>
-                <span style={{
-                  position: 'absolute',
-                  display: 'inline-flex',
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: '9999px',
-                  background: '#10b981',
-                  opacity: 0.75,
-                  animation: 'ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite'
-                }} />
-                <span style={{
-                  position: 'relative',
-                  display: 'inline-flex',
-                  borderRadius: '9999px',
-                  height: '10px',
-                  width: '10px',
-                  background: '#10b981'
-                }} />
-              </span>
-              <span style={{ fontSize: '12px', fontWeight: 800, letterSpacing: '0.04em', color: 'var(--text-pure)' }}>
-                GLOBAL FLEET AGGREGATES
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '11.5px', fontFamily: 'var(--mono)', flexWrap: 'wrap' }}>
-              <span style={{
-                padding: '3px 10px',
-                borderRadius: '12px',
-                background: 'rgba(16, 185, 129, 0.15)',
-                color: '#10b981',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                fontWeight: 700
-              }}>
-                ● {speakers.filter(s => s.status === 'online').length} / {speakers.length} Online ({Math.round((speakers.filter(s => s.status === 'online').length / (speakers.length || 1)) * 100)}%)
-              </span>
-
-              <span style={{
-                padding: '3px 10px',
-                borderRadius: '12px',
-                background: 'var(--panel2)',
-                color: 'var(--muted)',
-                border: '1px solid var(--line)',
-                fontWeight: 600
-              }}>
-                Inactive &gt;24h: 0
-              </span>
-
-              <span style={{
-                padding: '3px 10px',
-                borderRadius: '12px',
-                background: 'var(--panel2)',
-                color: 'var(--light-green)',
-                border: '1px solid var(--line)',
-                fontWeight: 600
-              }}>
-                FW: v1.4.2-doc (100% Compliant)
-              </span>
-            </div>
-          </div>
-
-
-        </div>
-
         {/* PANEL 1: DOCTOR ECOSYSTEM VIEW                                            */}
         {/* ========================================================================= */}
         {currentView === 'doctors' && (
@@ -2460,7 +2373,6 @@ export default function App() {
                   View: {viewMode === 'table' ? 'Virtualized Table (Scalable)' : 'Clinic Cards'}
                 </span>
               </div>
-              <small style={{ color: 'var(--muted)' }}>Full-duplex Gemini Live assistant for clinical care • Grouped by Practitioner</small>
             </div>
 
             {viewMode === 'table' ? (
@@ -2497,10 +2409,9 @@ export default function App() {
                     <thead>
                       <tr style={{ background: 'var(--panel)', borderBottom: '1px solid var(--line)', color: 'var(--muted)', textTransform: 'uppercase', fontSize: '10.5px', letterSpacing: '0.06em' }}>
                         <th style={{ padding: '12px 16px' }}>Device ID</th>
-                        <th style={{ padding: '12px 16px' }}>Hardware MAC</th>
-                        <th style={{ padding: '12px 16px' }}>City & Wi-Fi Location</th>
+                        <th style={{ padding: '12px 16px' }}>User / Practitioner</th>
+                        <th style={{ padding: '12px 16px' }}>Location</th>
                         <th style={{ padding: '12px 16px' }}>Connectivity</th>
-                        <th style={{ padding: '12px 16px' }}>Firmware</th>
                         <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
@@ -2510,7 +2421,7 @@ export default function App() {
                           key={spk.device_id}
                           onClick={() => setDetailSpeaker(spk)}
                           style={{ borderBottom: '1px solid var(--line)', transition: 'background 0.15s', cursor: 'pointer' }}
-                          title="Click to open full deep-dive card view"
+                          title="Click row to open deep-dive card view"
                           className="table-row-hover"
                         >
                           <td style={{ padding: '12px 16px', fontWeight: 800, fontFamily: 'var(--mono)' }}>
@@ -2525,31 +2436,44 @@ export default function App() {
                               {spk.device_id}
                             </span>
                           </td>
-                          <td style={{ padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: '12px' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <span>{spk.mac_address}</span>
-                              <button
-                                onClick={() => copyToClipboard(spk.mac_address, spk.device_id)}
-                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: copiedMac === spk.device_id ? 'var(--light-green)' : 'var(--muted)', padding: '2px' }}
-                                title="Copy MAC address"
-                              >
-                                {copiedMac === spk.device_id ? <Check size={12} /> : <Copy size={12} />}
-                              </button>
-                            </span>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div style={{
+                                width: '26px',
+                                height: '26px',
+                                borderRadius: '50%',
+                                background: 'var(--light-green-soft)',
+                                color: 'var(--light-green)',
+                                display: 'grid',
+                                placeItems: 'center',
+                                fontWeight: 800,
+                                fontSize: '11px',
+                                border: '1px solid var(--light-green-border)'
+                              }}>
+                                {(spk.name || 'D').charAt(0)}
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 700, color: 'var(--text-pure)', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  {spk.name || 'Dr. Brij Mohan Makkar'}
+                                  <CheckCircle size={12} color="var(--light-green)" />
+                                </div>
+                                {spk.specialization && (
+                                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>
+                                    {spk.specialization}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'var(--text-pure)', fontWeight: 600 }}>
                               <MapPin size={12} color="var(--light-green)" />
                               <span>{spk.city || 'New Delhi'}</span>
-                              <span style={{ color: 'var(--muted)' }}>•</span>
-                              <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--sky-blue)' }}>
-                                {spk.ip_address || (spk.status !== 'offline' ? '192.168.50.96' : 'Offline')}
-                              </span>
                             </span>
                           </td>
                           <td style={{ padding: '12px 16px' }}>
                             <span
-                              onClick={() => cycleSpeakerStatus(spk)}
+                              onClick={(e) => { e.stopPropagation(); cycleSpeakerStatus(spk); }}
                               className={`interactive-mode-pill ${spk.status === 'online' ? 'live-beacon-online' : ''}`}
                               style={{
                                 display: 'inline-flex',
@@ -2570,18 +2494,8 @@ export default function App() {
                               {spk.status.toUpperCase()}
                             </span>
                           </td>
-                          <td style={{ padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--muted)' }}>
-                            {spk.firmware_version || 'v1.4.2-doc'}
-                          </td>
                           <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                             <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setDetailSpeaker(spk); }}
-                                style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, background: 'rgba(56, 189, 248, 0.15)', border: '1px solid var(--sky-blue-border)', color: 'var(--sky-blue)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                title="Open full card view with hardware & clinical insights"
-                              >
-                                <Maximize2 size={12} /> Open Card
-                              </button>
                               <button
                                 onClick={(e) => { e.stopPropagation(); handleOpenPingModal(spk); }}
                                 style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--light-green-soft)', border: '1px solid var(--light-green-border)', color: 'var(--light-green)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -2683,28 +2597,20 @@ export default function App() {
                         </span>
                       </div>
 
-                      {/* Header Actions: Open Card & Interactive Status Badge */}
+                      {/* Header Actions: Firmware Version & Interactive Status Badge */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setDetailSpeaker(spk); }}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            padding: '4px 10px',
-                            borderRadius: '8px',
-                            background: 'var(--panel2)',
-                            border: '1px solid var(--line)',
-                            color: 'var(--text-pure)',
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            cursor: 'pointer'
-                          }}
-                          title="Open full detailed hardware & clinical view"
-                        >
-                          <Maximize2 size={12} color="var(--sky-blue)" />
-                          <span>Open</span>
-                        </button>
+                        <span style={{
+                          fontSize: '11px',
+                          color: 'var(--muted)',
+                          fontFamily: 'var(--mono)',
+                          background: 'var(--panel2)',
+                          padding: '3px 8px',
+                          borderRadius: '6px',
+                          border: '1px solid var(--line)',
+                          fontWeight: 600
+                        }} title="Firmware Version">
+                          {spk.firmware_version || 'v1.4.2-bargein'}
+                        </span>
 
                       <span
                         onClick={(e) => { e.stopPropagation(); cycleSpeakerStatus(spk); }}
@@ -2747,11 +2653,15 @@ export default function App() {
                       <div style={{ color: 'var(--light-green)', fontSize: '13px', fontWeight: 600, marginTop: '2px' }}>
                         {spk.specialization || 'Clinical Specialist'}
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)', fontSize: '12px', marginTop: '6px' }}>
-                        <Building2 size={13} style={{ flexShrink: 0 }} />
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {spk.clinic_name} • {spk.clinic_address}
-                        </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-pure)', fontSize: '12px', fontWeight: 600 }}>
+                          <Building2 size={13} color="var(--light-green)" style={{ flexShrink: 0 }} />
+                          <span>{spk.clinic_name || "Dr. Makkar's Diabetes & Obesity Centre"}</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)', fontSize: '11.5px', paddingLeft: '19px' }}>
+                          <MapPin size={12} color="var(--light-green)" style={{ flexShrink: 0 }} />
+                          <span>{spk.clinic_address || "Paschim Vihar, New Delhi"}</span>
+                        </div>
                       </div>
                     </div>
 
@@ -2863,8 +2773,16 @@ export default function App() {
                       {/* IP Address */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)' }}>
                         <Globe size={13} color="var(--sky-blue)" />
-                        <span style={{ fontFamily: 'var(--mono)', color: 'var(--sky-blue)', fontSize: '11px' }}>
-                          {spk.ip_address || (spk.status !== 'offline' ? '192.168.50.96' : '—')}
+                        <span style={{ fontFamily: 'var(--mono)', color: 'var(--sky-blue)', fontSize: '11px', fontWeight: 600 }}>
+                          {spk.ip_address || (spk.status !== 'offline' ? '192.168.50.91' : 'Offline')}
+                        </span>
+                      </div>
+
+                      {/* Firmware */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--muted)' }}>
+                        <Cpu size={13} color="var(--light-green)" />
+                        <span style={{ fontFamily: 'var(--mono)', fontSize: '11px' }}>
+                          {spk.firmware_version || 'v1.4.2-bargein'}
                         </span>
                       </div>
 
@@ -4319,9 +4237,15 @@ export default function App() {
                     {detailSpeaker.specialization || 'Clinical Specialist'}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '6px', color: 'var(--muted)', fontSize: '12px', marginBottom: '12px', lineHeight: 1.4 }}>
-                    <Building2 size={14} style={{ flexShrink: 0, marginTop: '2px' }} />
-                    <span>{detailSpeaker.clinic_name} • {detailSpeaker.clinic_address}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-pure)', fontSize: '12.5px', fontWeight: 600 }}>
+                      <Building2 size={14} color="var(--light-green)" style={{ flexShrink: 0 }} />
+                      <span>{detailSpeaker.clinic_name}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--muted)', fontSize: '11.5px', paddingLeft: '20px' }}>
+                      <MapPin size={12} color="var(--light-green)" style={{ flexShrink: 0 }} />
+                      <span>{detailSpeaker.clinic_address}</span>
+                    </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '11.5px', borderTop: '1px solid var(--line)', paddingTop: '12px' }}>
