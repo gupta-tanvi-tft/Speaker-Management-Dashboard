@@ -39,7 +39,8 @@ export default function App() {
   // HIPAA PII unmasking state
   const [revealedPii, setRevealedPii] = useState({})
   const [copiedMac, setCopiedMac] = useState(null)
-  // Commissioning Wizard State (7 Steps: Draft -> Registered -> Flashed -> Tested -> Active)
+  // Commissioning Wizard State (Quick Direct Add vs 7-Step Advanced Provisioning)
+  const [wizardMode, setWizardMode] = useState('quick')
   const [wizardStep, setWizardStep] = useState(1)
   const [wizardForm, setWizardForm] = useState({
     role: 'doctor',
@@ -274,11 +275,23 @@ export default function App() {
       })
       const data = await res.json()
       if (!res.ok) {
-        throw new Error(data.detail || 'Failed to create user')
+        let msg = 'Failed to create user'
+        if (data && data.detail) {
+          if (typeof data.detail === 'string') {
+            msg = data.detail
+          } else if (Array.isArray(data.detail)) {
+            msg = data.detail.map(d => d.msg || d.detail || JSON.stringify(d)).join(' • ')
+          } else if (typeof data.detail === 'object') {
+            msg = data.detail.msg || data.detail.detail || JSON.stringify(data.detail)
+          }
+        }
+        throw new Error(msg)
       }
       setAddUserModalOpen(false)
       setUserForm({ full_name: '', email: '', username: '', role: 'User', status: 'Active', password: '' })
-      setStatusMessage(`✅ User "${data.username}" successfully registered as ${data.role}`)
+      const createdUsername = data?.user?.username || data?.username || userForm.username
+      const createdRole = data?.user?.role || data?.role || userForm.role
+      setStatusMessage(`✅ User "${createdUsername}" successfully registered as ${createdRole}`)
       setTimeout(() => setStatusMessage(''), 4000)
       fetchUsers()
     } catch (err) {
@@ -313,7 +326,17 @@ export default function App() {
       })
       const data = await res.json()
       if (!res.ok) {
-        throw new Error(data.detail || 'Failed to update user')
+        let msg = 'Failed to update user'
+        if (data && data.detail) {
+          if (typeof data.detail === 'string') {
+            msg = data.detail
+          } else if (Array.isArray(data.detail)) {
+            msg = data.detail.map(d => d.msg || d.detail || JSON.stringify(d)).join(' • ')
+          } else if (typeof data.detail === 'object') {
+            msg = data.detail.msg || data.detail.detail || JSON.stringify(data.detail)
+          }
+        }
+        throw new Error(msg)
       }
       setEditUserModalOpen(false)
       setUserBeingEdited(null)
@@ -627,15 +650,19 @@ export default function App() {
 
   // Wizard Step Initializer
   async function handleOpenCommissioningWizard(role = 'doctor') {
-    let nextId = 'SPK-0000004'
+    let nextNum = speakers.length + 1
+    let nextId = `SPK-${String(nextNum).padStart(7, '0')}`
     try {
       const res = await fetch(`${BACKEND_API}/speakers/next-id`)
       if (res.ok) {
         const data = await res.json()
-        nextId = data.next_id
+        if (data.next_id) nextId = data.next_id
       }
     } catch {}
 
+    const candidateMac = `28:84:85:B2:BC:${String(speakers.length + 10).padStart(2, '0')}`
+
+    setWizardMode('quick')
     setWizardStep(1)
     setWizardPersonaStatus(null)
     setWizardPersonaError('')
@@ -644,21 +671,22 @@ export default function App() {
     setWizardForm({
       role: role,
       device_id: nextId,
-      mac_address: '',
+      mac_address: candidateMac,
       doctor_id: role === 'doctor' ? '6789ebb61a093d60fa691c39' : '',
-      name: role === 'doctor' ? 'Dr. Brij Mohan Makkar' : '',
-      phone: role === 'doctor' ? '+91 98110 24891' : '',
-      email: role === 'doctor' ? 'drbmakkar@yhealth.me' : '',
-      specialization: role === 'doctor' ? 'Diabetology & Metabolic Diseases' : '',
-      clinic_name: role === 'doctor' ? "Dr. Makkar's Diabetes & Obesity Centre" : '',
-      clinic_address: role === 'doctor' ? 'A-5B/121, Paschim Vihar, New Delhi - 110063' : '',
-      location_label: role === 'doctor' ? 'Consultation Room 2' : 'Bedside Station 1',
+      name: role === 'doctor' ? 'Dr. Brij Mohan Makkar' : 'Ramesh Kumar',
+      phone: role === 'doctor' ? '+91 98110 24891' : '+91 98765 43210',
+      email: role === 'doctor' ? 'drbmakkar@yhealth.me' : 'patient@yhealth.me',
+      specialization: role === 'doctor' ? 'Diabetology & Metabolic Diseases' : 'Cardiac & Vitals Recovery',
+      clinic_name: role === 'doctor' ? "Dr. Makkar's Diabetes & Obesity Centre" : 'Home Care Bedside',
+      clinic_address: role === 'doctor' ? 'Paschim Vihar, New Delhi' : 'Patient Residence, New Delhi',
+      location_label: role === 'doctor' ? 'New Delhi' : 'New Delhi',
+      city: 'New Delhi',
       wifi_ssid: 'TFTus-WiFi',
       wifi_password: '',
       firmware_role: role,
-      firmware_version: role === 'doctor' ? 'v1.4.2-doc' : 'v1.4.2-pat',
+      firmware_version: role === 'doctor' ? 'v1.4.2-bargein' : 'v1.4.2-pat',
       persona_version: 'v3.1',
-      lifecycle_state: 'draft'
+      lifecycle_state: 'active'
     })
     setAddModalOpen(true)
   }
@@ -2067,31 +2095,6 @@ export default function App() {
               </span>
             )}
 
-            {/* Live Real-Time Sync Indicator */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '7px',
-                padding: '6px 14px',
-                borderRadius: '20px',
-                background: wsConnected ? 'var(--light-green-soft)' : 'var(--golden-yellow-soft)',
-                border: wsConnected ? '1px solid var(--light-green-border)' : '1px solid var(--golden-yellow-border)',
-                fontSize: '11.5px',
-                fontWeight: 700,
-                color: wsConnected ? 'var(--light-green)' : 'var(--golden-yellow)'
-              }}
-              title={wsConnected ? 'Real-time WebSocket bus connected on port 8010. Continuous 2s live polling active.' : 'Connecting to live synchronization bus...'}
-            >
-              <span className={wsConnected ? 'live-beacon-online' : ''} style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: wsConnected ? 'var(--light-green)' : 'var(--golden-yellow)',
-                display: 'inline-block'
-              }} />
-              <span>{wsConnected ? 'Live Real-Time Sync' : 'Reconnecting Sync...'}</span>
-            </div>
 
             {/* Theme Toggle Button (Light / Dark) */}
             <button
@@ -3129,41 +3132,9 @@ export default function App() {
                     No Patient Bedside Speakers Configured
                   </div>
                   <p style={{ maxWidth: '520px', fontSize: '13px', color: 'var(--muted)', lineHeight: 1.5, margin: 0 }}>
-                    Currently, 1 speaker is active in the ecosystem (<b style={{ color: 'var(--light-green)' }}>SPK-01 • Dr. Brij Mohan Makkar</b>). When you provision patient home or bedside speakers, they will be tracked here with individual care goals, vitals monitoring, and assigned doctor linkage.
+                    When you provision patient home or bedside speakers using the <b>+ Add New Speaker</b> button at the top, they will be tracked here with individual care goals, vitals monitoring, and assigned doctor linkage.
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setNewSpeakerForm(prev => ({
-                      ...prev,
-                      role: 'patient',
-                      device_id: `SPK-${String(speakers.length + 1).padStart(2, '0')}`,
-                      mac_address: '',
-                      name: '',
-                      doctor_assigned_name: 'Dr. Brij Mohan Makkar',
-                      doctor_assigned_id: '6789ebb61a093d60fa691c39'
-                    }))
-                    setAddModalOpen(true)
-                  }}
-                  style={{
-                    marginTop: '6px',
-                    padding: '10px 22px',
-                    background: 'linear-gradient(135deg, var(--sky-blue), #0284c7)',
-                    color: '#031726',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(56, 189, 248, 0.35)'
-                  }}
-                >
-                  <PlusCircle size={16} />
-                  <span>+ Onboard Patient Speaker</span>
-                </button>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(480px, 1fr))', gap: '18px' }}>
@@ -5156,22 +5127,22 @@ export default function App() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.82)', display: 'grid', placeItems: 'center', zIndex: 120, backdropFilter: 'blur(6px)' }}>
           <div style={{ background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: '16px', width: '640px', maxHeight: '92vh', overflowY: 'auto', padding: '28px', boxShadow: 'var(--shadow-lg)' }}>
             
-            {/* Header & Lifecycle State */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+            {/* Header & Mode Selector */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--sky-blue)' }}>
-                    Enterprise Onboarding Pipeline
+                  <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: wizardForm.role === 'doctor' ? 'var(--light-green)' : 'var(--sky-blue)' }}>
+                    {wizardForm.role === 'doctor' ? '🩺 Doctor Clinic Ecosystem' : '🧑‍🤝‍🧑 Patient Bedside Ecosystem'}
                   </span>
                   <span style={{ fontSize: '10.5px', padding: '2px 8px', borderRadius: '10px', background: 'var(--light-green-soft)', color: 'var(--light-green)', border: '1px solid var(--light-green-border)', fontWeight: 700 }}>
-                    STATE: {wizardForm.lifecycle_state.toUpperCase()}
+                    ACTIVE PROVISIONING
                   </span>
                 </div>
                 <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
-                  Hardware Commissioning Wizard
+                  Add New Speaker
                 </div>
                 <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '2px' }}>
-                  7-Step zero-trust provisioning for global hospital & home fleets
+                  Register and provision hardware speaker to the active fleet
                 </div>
               </div>
               <button
@@ -5182,53 +5153,279 @@ export default function App() {
               </button>
             </div>
 
-            {/* 7-Step Progress Indicator */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', background: 'var(--panel2)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
-              {[
-                { step: 1, label: 'Role' },
-                { step: 2, label: 'MAC / ID' },
-                { step: 3, label: 'Persona' },
-                { step: 4, label: 'Location' },
-                { step: 5, label: 'Wi-Fi' },
-                { step: 6, label: 'Firmware' },
-                { step: 7, label: 'Test & Act' }
-              ].map(s => (
-                <div
-                  key={s.step}
-                  onClick={() => {
-                    if (s.step < wizardStep) setWizardStep(s.step)
-                  }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '4px',
-                    cursor: s.step < wizardStep ? 'pointer' : 'default',
-                    opacity: s.step === wizardStep ? 1 : (s.step < wizardStep ? 0.85 : 0.45)
-                  }}
-                >
-                  <div style={{
-                    width: '26px',
-                    height: '26px',
-                    borderRadius: '50%',
-                    display: 'grid',
-                    placeItems: 'center',
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    background: s.step === wizardStep
-                      ? 'linear-gradient(135deg, var(--light-green), #10b981)'
-                      : (s.step < wizardStep ? 'var(--light-green-soft)' : 'var(--panel)'),
-                    color: s.step === wizardStep ? '#042217' : (s.step < wizardStep ? 'var(--light-green)' : 'var(--muted)'),
-                    border: `1px solid ${s.step <= wizardStep ? 'var(--light-green-border)' : 'var(--line)'}`
-                  }}>
-                    {s.step < wizardStep ? '✓' : s.step}
-                  </div>
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: s.step === wizardStep ? 'var(--text-pure)' : 'var(--muted)' }}>
-                    {s.label}
-                  </span>
-                </div>
-              ))}
+            {/* Mode Switcher Tabs: Quick Add vs 7-Step Advanced Provisioning */}
+            <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', background: 'var(--panel2)', padding: '4px', borderRadius: '8px', border: '1px solid var(--line)' }}>
+              <button
+                type="button"
+                onClick={() => setWizardMode('quick')}
+                style={{
+                  flex: 1,
+                  padding: '7px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: wizardMode === 'quick' ? 'var(--light-green)' : 'transparent',
+                  color: wizardMode === 'quick' ? '#042217' : 'var(--muted)',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                ⚡ Instant Direct Add
+              </button>
+              <button
+                type="button"
+                onClick={() => setWizardMode('advanced')}
+                style={{
+                  flex: 1,
+                  padding: '7px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: wizardMode === 'advanced' ? 'var(--panel)' : 'transparent',
+                  color: wizardMode === 'advanced' ? 'var(--text-pure)' : 'var(--muted)',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+              >
+                ⚙️ 7-Step Hardware Commissioning
+              </button>
             </div>
+
+            {/* ========================================================================= */}
+            {/* VIEW A: INSTANT DIRECT ADD FORM (FAST, ZERO-FRICTION & 100% FUNCTIONAL)   */}
+            {/* ========================================================================= */}
+            {wizardMode === 'quick' ? (
+              <form onSubmit={handleCommissioningSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Domain Selection Cards */}
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700, letterSpacing: '0.06em' }}>
+                    TARGET CARE DOMAIN
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    <div
+                      onClick={() => setWizardForm(prev => ({
+                        ...prev,
+                        role: 'doctor',
+                        firmware_role: 'doctor',
+                        firmware_version: 'v1.4.2-bargein',
+                        name: 'Dr. Brij Mohan Makkar',
+                        specialization: 'Diabetology & Metabolic Diseases',
+                        clinic_name: "Dr. Makkar's Diabetes & Obesity Centre",
+                        clinic_address: 'Paschim Vihar, New Delhi',
+                        location_label: 'New Delhi'
+                      }))}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '10px',
+                        background: wizardForm.role === 'doctor' ? 'var(--light-green-soft)' : 'var(--panel2)',
+                        border: wizardForm.role === 'doctor' ? '1.5px solid var(--light-green)' : '1px solid var(--line)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, color: wizardForm.role === 'doctor' ? 'var(--light-green)' : 'var(--text-pure)', fontSize: '13px' }}>
+                        <Stethoscope size={16} /> Doctor Clinic
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '3px' }}>Consultation rooms & clinic desk</div>
+                    </div>
+
+                    <div
+                      onClick={() => setWizardForm(prev => ({
+                        ...prev,
+                        role: 'patient',
+                        firmware_role: 'patient',
+                        firmware_version: 'v1.4.2-pat',
+                        name: 'Ramesh Kumar',
+                        specialization: 'Cardiac & Vitals Recovery',
+                        clinic_name: 'Home Care Bedside',
+                        clinic_address: 'Patient Residence, New Delhi',
+                        location_label: 'New Delhi'
+                      }))}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '10px',
+                        background: wizardForm.role === 'patient' ? 'var(--sky-blue-soft)' : 'var(--panel2)',
+                        border: wizardForm.role === 'patient' ? '1.5px solid var(--sky-blue)' : '1px solid var(--line)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, color: wizardForm.role === 'patient' ? 'var(--sky-blue)' : 'var(--text-pure)', fontSize: '13px' }}>
+                        <HeartPulse size={16} /> Patient Bedside
+                      </div>
+                      <div style={{ fontSize: '11px', color: 'var(--muted)', marginTop: '3px' }}>Home monitoring & daily vitals</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Device ID & Hardware MAC */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      DEVICE ID
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.device_id}
+                      onChange={e => setWizardForm({ ...wizardForm, device_id: e.target.value.toUpperCase() })}
+                      required
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontFamily: 'var(--mono)', fontSize: '13px', fontWeight: 700 }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      HARDWARE MAC ADDRESS
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.mac_address}
+                      onChange={e => setWizardForm({ ...wizardForm, mac_address: e.target.value })}
+                      placeholder="e.g. 28:84:85:B2:BC:B8"
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontFamily: 'var(--mono)', fontSize: '13px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Assigned User / Doctor Name */}
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                    {wizardForm.role === 'doctor' ? 'ASSIGNED CLINICAL PRACTITIONER' : 'ASSIGNED PATIENT NAME'}
+                  </label>
+                  <input
+                    type="text"
+                    value={wizardForm.name}
+                    onChange={e => setWizardForm({ ...wizardForm, name: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontSize: '13px', fontWeight: 600 }}
+                  />
+                </div>
+
+                {/* Clinic / Station Location & City */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      {wizardForm.role === 'doctor' ? 'CLINIC CENTRE NAME' : 'CARE STATION'}
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.clinic_name}
+                      onChange={e => setWizardForm({ ...wizardForm, clinic_name: e.target.value })}
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      CITY / REGION
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.city || 'New Delhi'}
+                      onChange={e => setWizardForm({ ...wizardForm, city: e.target.value })}
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontSize: '13px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Wi-Fi SSID & Firmware Version */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      WI-FI SSID (NETWORK)
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.wifi_ssid}
+                      onChange={e => setWizardForm({ ...wizardForm, wifi_ssid: e.target.value })}
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--text-pure)', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginBottom: '6px', fontWeight: 700 }}>
+                      FIRMWARE VERSION
+                    </label>
+                    <input
+                      type="text"
+                      value={wizardForm.firmware_version}
+                      onChange={e => setWizardForm({ ...wizardForm, firmware_version: e.target.value })}
+                      style={{ width: '100%', padding: '9px 12px', background: 'var(--panel2)', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--muted)', fontFamily: 'var(--mono)', fontSize: '13px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setAddModalOpen(false)}
+                    style={{ padding: '9px 18px', background: 'transparent', border: '1px solid var(--line)', borderRadius: '8px', color: 'var(--muted)', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    style={{
+                      padding: '10px 24px',
+                      background: wizardForm.role === 'doctor' ? 'linear-gradient(135deg, var(--light-green), #10b981)' : 'linear-gradient(135deg, var(--sky-blue), #0284c7)',
+                      color: wizardForm.role === 'doctor' ? '#042217' : '#031726',
+                      fontWeight: 800,
+                      borderRadius: '8px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      boxShadow: '0 4px 14px rgba(52, 211, 153, 0.35)'
+                    }}
+                  >
+                    🚀 Register & Add Speaker
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div>
+                {/* 7-Step Progress Indicator */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', background: 'var(--panel2)', padding: '10px 14px', borderRadius: '10px', border: '1px solid var(--line)' }}>
+                  {[
+                    { step: 1, label: 'Role' },
+                    { step: 2, label: 'MAC / ID' },
+                    { step: 3, label: 'Persona' },
+                    { step: 4, label: 'Location' },
+                    { step: 5, label: 'Wi-Fi' },
+                    { step: 6, label: 'Firmware' },
+                    { step: 7, label: 'Test & Act' }
+                  ].map(s => (
+                    <div
+                      key={s.step}
+                      onClick={() => {
+                        if (s.step < wizardStep) setWizardStep(s.step)
+                      }}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                        cursor: s.step < wizardStep ? 'pointer' : 'default',
+                        opacity: s.step === wizardStep ? 1 : (s.step < wizardStep ? 0.85 : 0.45)
+                      }}
+                    >
+                      <div style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        display: 'grid',
+                        placeItems: 'center',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        background: s.step === wizardStep
+                          ? 'linear-gradient(135deg, var(--light-green), #10b981)'
+                          : (s.step < wizardStep ? 'var(--light-green-soft)' : 'var(--panel)'),
+                        color: s.step === wizardStep ? '#042217' : (s.step < wizardStep ? 'var(--light-green)' : 'var(--muted)'),
+                        border: `1px solid ${s.step <= wizardStep ? 'var(--light-green-border)' : 'var(--line)'}`
+                      }}>
+                        {s.step < wizardStep ? '✓' : s.step}
+                      </div>
+                      <span style={{ fontSize: '10px', fontWeight: 600, color: s.step === wizardStep ? 'var(--text-pure)' : 'var(--muted)' }}>
+                        {s.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
 
             {/* STEP 1: ROLE SELECTION */}
             {wizardStep === 1 && (
@@ -5698,6 +5895,8 @@ export default function App() {
                     🚀 Activate & Save to Production Fleet
                   </button>
                 </div>
+              </div>
+            )}
               </div>
             )}
 

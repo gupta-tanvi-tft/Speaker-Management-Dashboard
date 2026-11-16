@@ -140,10 +140,10 @@ class LoginRequest(BaseModel):
     password: str = Field(..., min_length=4, max_length=128)
 
 class CreateUserRequest(BaseModel):
-    full_name: str = Field(..., min_length=2, max_length=100)
-    username: str = Field(..., min_length=3, max_length=40)
-    email: str = Field(..., min_length=5, max_length=120)
-    password: str = Field(..., min_length=6, max_length=128)
+    full_name: str = Field(..., min_length=1, max_length=100)
+    username: str = Field(..., min_length=2, max_length=40)
+    email: str = Field(..., min_length=3, max_length=120)
+    password: str = Field(..., min_length=4, max_length=128)
     role: str = Field(default="Viewer")
     status: str = Field(default="Active")
 

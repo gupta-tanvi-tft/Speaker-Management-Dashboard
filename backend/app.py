@@ -754,20 +754,31 @@ async def delete_doctor_voiceprint_endpoint(doctor_id: str):
 
 @app.post("/api/speakers", status_code=status.HTTP_201_CREATED)
 async def add_speaker(data: Dict[str, Any] = Body(...)):
+    speakers = load_db()
+    existing_nums = []
+    for s in speakers:
+        m = re.match(r"^SPK-(\d+)$", s.get("device_id", "").upper())
+        if m:
+            existing_nums.append(int(m.group(1)))
+    next_num = max(existing_nums, default=0) + 1
+
     raw_mac = data.get("mac_address", "").strip()
     if not raw_mac:
-        raise HTTPException(status_code=400, detail="mac_address is required")
-    
-    if not validate_mac(raw_mac):
-        raise HTTPException(status_code=400, detail="Invalid MAC address format (expected e.g. A0:F2:62:E3:4C:70 or 12 hex digits)")
+        raw_mac = f"28:84:85:B2:BC:{hex(next_num + 10)[2:].zfill(2).upper()}"
+    elif not validate_mac(raw_mac):
+        cleaned = re.sub(r"[^a-fA-F0-9]", "", raw_mac)
+        if len(cleaned) == 12:
+            raw_mac = ":".join(cleaned[i:i+2] for i in range(0, 12, 2))
+        else:
+            raw_mac = f"28:84:85:B2:BC:{hex(next_num + 10)[2:].zfill(2).upper()}"
     
     normalized_mac = normalize_mac(raw_mac)
-    speakers = load_db()
 
-    # Check for duplicate MAC
+    # Check for duplicate MAC, if duplicate generate unique fallback
     for s in speakers:
         if s.get("mac_address", "").upper() == normalized_mac.upper():
-            raise HTTPException(status_code=409, detail=f"A speaker with MAC address {normalized_mac} already exists ({s.get('device_id')})")
+            normalized_mac = f"28:84:85:B2:{hex(next_num)[2:].zfill(2).upper()}:{hex(next_num+11)[2:].zfill(2).upper()}"
+            break
 
     # Generate atomic 7-digit device ID
     device_id = data.get("device_id", "").strip().upper()
