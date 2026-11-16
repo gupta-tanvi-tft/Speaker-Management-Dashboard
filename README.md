@@ -1,4 +1,4 @@
-# 🎙️ YHealth Speaker Management Dashboard
+#  YHealth Speaker Management Dashboard
 
 <div align="center">
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 - [Overview](#-overview)
 - [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
@@ -37,7 +37,7 @@
 
 ---
 
-## 🩺 Overview
+##  Overview
 
 The **YHealth Speaker Management Dashboard** is an enterprise operations console engineered to monitor, configure, commission, and diagnose the entire fleet of **YHealth ESP32-S3 Healthcare Assistant Smart Speakers**. 
 
@@ -45,7 +45,7 @@ The smart speakers operate in clinical environments (doctor consultation desks, 
 
 ---
 
-## ✨ Key Features
+##  Key Features
 
 ### 1. Dual-Ecosystem Fleet Monitoring
 - **Doctor Ecosystem**: Live oversight of consultation room speakers assigned to specialist physicians. Displays real-time clinic locations, medical specialties (e.g., Diabetology, Cardiology), consultation room tags, and active patient caseloads.
@@ -82,7 +82,7 @@ A visual step-by-step wizard to register and commission bare ESP32-S3 boards int
 
 ---
 
-## 🏛️ System Architecture
+##  System Architecture
 
 ```text
   +-------------------------------------------------------------------------+
@@ -114,7 +114,7 @@ A visual step-by-step wizard to register and commission bare ESP32-S3 boards int
 
 ---
 
-## 📊 Hardware State & Diagnostics Matrix
+##  Hardware State & Diagnostics Matrix
 
 The dashboard categorizes hardware status using a deterministic 3-mode evaluation engine:
 
@@ -132,7 +132,7 @@ The dashboard categorizes hardware status using a deterministic 3-mode evaluatio
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Frontend Architecture
 - **Framework**: React 18.2 with Functional Components and Custom Hooks
@@ -150,7 +150,7 @@ The dashboard categorizes hardware status using a deterministic 3-mode evaluatio
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```text
 Speaker-Management-Dashboard/
@@ -184,7 +184,7 @@ Speaker-Management-Dashboard/
 
 ---
 
-## 🚀 Quick Start & Installation
+##  Quick Start & Installation
 
 ### Prerequisites
 - **Node.js**: v18.0.0 or higher ([Download Node.js](https://nodejs.org/))
@@ -193,7 +193,7 @@ Speaker-Management-Dashboard/
 
 ---
 
-### 🌐 Production Deployment on KVM2 Server (with SSL / HTTPS)
+###  Production Deployment on KVM2 Server (with SSL / HTTPS)
 
 The dashboard is configured for production hosting on Linux servers (e.g., KVM2 VPS / Dedicated Instances) using **Docker Compose**, **Nginx Reverse Proxy**, and **Let\'s Encrypt Certbot** with automated renewal.
 
@@ -244,7 +244,7 @@ docker compose ps
 
 ---
 
-### 🐳 Local Docker Deployment
+###  Local Docker Deployment
 
 #### Option 1: Unified All-in-One Container
 Build and run the production image (bundles the React 18 frontend and FastAPI backend into a single container on port 8010):
@@ -328,7 +328,7 @@ npm run dev
 
 ---
 
-## ⚙️ Environment Configuration
+##  Environment Configuration
 
 ### Backend (`backend/.env`)
 ```ini
@@ -360,7 +360,7 @@ VITE_GRAFANA_DEVICE_VARIABLE=device_id
 
 ---
 
-## 📡 API & WebSocket Reference
+##  API & WebSocket Reference
 
 ### REST Endpoints (`http://localhost:8010/api`)
 
@@ -406,7 +406,7 @@ Continuous JSON broadcast streaming live fleet metrics every 5 seconds or upon t
 
 ---
 
-## 🔒 Enterprise Zero-Trust Security
+##  Enterprise Zero-Trust Security
 
 1. **Password Hashing (Argon2id)**:
    - Evaluated using 64 MB memory cost, 3 iterations, and 4 parallel threads.
@@ -421,7 +421,7 @@ Continuous JSON broadcast streaming live fleet metrics every 5 seconds or upon t
 
 ---
 
-## ❓ Troubleshooting & FAQ
+##  Troubleshooting & FAQ
 
 ### 1. Frontend cannot connect to Backend (`Failed to fetch`)
 - Ensure the FastAPI server is running on port `8010` (`http://localhost:8010/docs`).
@@ -438,7 +438,7 @@ Continuous JSON broadcast streaming live fleet metrics every 5 seconds or upon t
 
 ---
 
-## 📝 Contributing & Commit Guidelines
+##  Contributing & Commit Guidelines
 
 We enforce the **Conventional Commits** specification to ensure a clean, audit-compliant git history:
 
@@ -459,7 +459,7 @@ git commit -m "feat(telemetry): add live wifi rssi meter and 3-mode status matri
 
 ---
 
-## 📄 License
+##  License
 
 Proprietary and Confidential. Copyright &copy; 2026 **YHealth Technologies Inc.** All rights reserved.  
 Unauthorized distribution, modification, or commercial exploitation without written consent is strictly prohibited.
