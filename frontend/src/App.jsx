@@ -2152,109 +2152,307 @@ export default function App() {
           </div>
         </header>
 
-        {/* Top Summary Metrics Cards - Clean, Focused, No Redundant Active Cohort */}
+        {/* Top Summary Metrics Cards - Role-Filtered Overview */}
         <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
-          {/* Card 1: Doctor Speakers (Mint/Light Green Accent) */}
-          <div style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--line)',
-            borderRadius: '12px',
-            padding: '18px 20px',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--light-green)' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                Doctor Speakers
-              </span>
-              <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--light-green-soft)', display: 'grid', placeItems: 'center' }}>
-                <Stethoscope size={15} color="var(--light-green)" />
+          {currentView === 'doctors' ? (
+            <>
+              {/* Doctor View Card 1: Doctor Speakers */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--light-green)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Doctor Clinic Speakers
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--light-green-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Stethoscope size={15} color="var(--light-green)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {doctorSpeakers.length} Unit{doctorSpeakers.length === 1 ? '' : 's'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--light-green)', marginTop: '4px', fontWeight: 600 }}>
+                  {doctorSpeakers.length > 0 ? doctorSpeakers[0].clinic_name : 'No active clinics'}
+                </div>
               </div>
-            </div>
-            <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
-              {doctorSpeakers.length} Unit{doctorSpeakers.length === 1 ? '' : 's'}
-            </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--light-green)', marginTop: '4px', fontWeight: 600 }}>
-              {doctorSpeakers.length > 0 ? doctorSpeakers[0].clinic_name : 'No active clinics'}
-            </div>
-          </div>
 
-          {/* Card 2: Patient Speakers (Sky Light Blue Accent) */}
-          <div style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--line)',
-            borderRadius: '12px',
-            padding: '18px 20px',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--sky-blue)' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                Patient Speakers
-              </span>
-              <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--sky-blue-soft)', display: 'grid', placeItems: 'center' }}>
-                <HeartPulse size={15} color="var(--sky-blue)" />
+              {/* Doctor View Card 2: Clinical Practice */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--light-green)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Clinical Practice
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--light-green-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Building2 size={15} color="var(--light-green)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {new Set(doctorSpeakers.map(s => s.name)).size || 1} Doctor
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--light-green)', marginTop: '4px', fontWeight: 600 }}>
+                  Diabetology & Metabolic Diseases
+                </div>
               </div>
-            </div>
-            <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
-              {patientSpeakers.length} Unit{patientSpeakers.length === 1 ? '' : 's'}
-            </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--sky-blue)', marginTop: '4px', fontWeight: 600 }}>
-              {patientSpeakers.length === 0 ? 'Ready for patient provisioning' : 'Home Care & Bedside Vitals'}
-            </div>
-          </div>
 
-          {/* Card 3: Active Fleet Hardware (Golden-Yellow Light Accent) */}
-          <div style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--line)',
-            borderRadius: '12px',
-            padding: '18px 20px',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--golden-yellow)' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                Hardware Status
-              </span>
-              <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--golden-yellow-soft)', display: 'grid', placeItems: 'center' }}>
-                <Radio size={15} color="var(--golden-yellow)" />
+              {/* Doctor View Card 3: Doctor Hardware Status */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--golden-yellow)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Hardware Status
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--golden-yellow-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Radio size={15} color="var(--golden-yellow)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--light-green)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span className="live-beacon-online" style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--light-green)', display: 'inline-block' }} />
+                    {doctorSpeakers.filter(s => s.status === 'online').length} Online
+                  </span>
+                  <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
+                  <span style={{ color: 'var(--golden-yellow)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--golden-yellow)', display: 'inline-block' }} />
+                    {doctorSpeakers.filter(s => s.status === 'standby').length} Standby
+                  </span>
+                  {doctorSpeakers.filter(s => s.status === 'offline').length > 0 && (
+                    <>
+                      <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
+                      <span style={{ color: 'var(--red)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--red)', display: 'inline-block' }} />
+                        {doctorSpeakers.filter(s => s.status === 'offline').length} Offline
+                      </span>
+                    </>
+                  )}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Wifi size={12} color="var(--light-green)" />
+                  <span>{doctorSpeakers.filter(s => s.wifi_connected !== false && s.status !== 'offline').length} of {doctorSpeakers.length} Doctor Units Wi-Fi Linked</span>
+                </div>
               </div>
-            </div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ color: 'var(--light-green)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span className="live-beacon-online" style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--light-green)', display: 'inline-block' }} />
-                {speakers.filter(s => s.status === 'online').length} Online
-              </span>
-              <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
-              <span style={{ color: 'var(--golden-yellow)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--golden-yellow)', display: 'inline-block' }} />
-                {speakers.filter(s => s.status === 'standby').length} Standby
-              </span>
-              {speakers.filter(s => s.status === 'offline').length > 0 && (
-                <>
+            </>
+          ) : currentView === 'patients' ? (
+            <>
+              {/* Patient View Card 1: Patient Speakers */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--sky-blue)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Patient Speakers
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--sky-blue-soft)', display: 'grid', placeItems: 'center' }}>
+                    <HeartPulse size={15} color="var(--sky-blue)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {patientSpeakers.length} Unit{patientSpeakers.length === 1 ? '' : 's'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--sky-blue)', marginTop: '4px', fontWeight: 600 }}>
+                  {patientSpeakers.length === 0 ? 'Ready for patient provisioning' : 'Home Care & Bedside Vitals'}
+                </div>
+              </div>
+
+              {/* Patient View Card 2: Care Monitoring */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--sky-blue)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Care Monitoring
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--sky-blue-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Users size={15} color="var(--sky-blue)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {patientSpeakers.length} Patient{patientSpeakers.length === 1 ? '' : 's'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--sky-blue)', marginTop: '4px', fontWeight: 600 }}>
+                  Bedside Vitals & Daily Check-ins
+                </div>
+              </div>
+
+              {/* Patient View Card 3: Patient Hardware Status */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--golden-yellow)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Hardware Status
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--golden-yellow-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Radio size={15} color="var(--golden-yellow)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--light-green)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span className="live-beacon-online" style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--light-green)', display: 'inline-block' }} />
+                    {patientSpeakers.filter(s => s.status === 'online').length} Online
+                  </span>
+                  <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
+                  <span style={{ color: 'var(--golden-yellow)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--golden-yellow)', display: 'inline-block' }} />
+                    {patientSpeakers.filter(s => s.status === 'standby').length} Standby
+                  </span>
+                  {patientSpeakers.filter(s => s.status === 'offline').length > 0 && (
+                    <>
+                      <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
+                      <span style={{ color: 'var(--red)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--red)', display: 'inline-block' }} />
+                        {patientSpeakers.filter(s => s.status === 'offline').length} Offline
+                      </span>
+                    </>
+                  )}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Wifi size={12} color="var(--light-green)" />
+                  <span>{patientSpeakers.filter(s => s.wifi_connected !== false && s.status !== 'offline').length} of {patientSpeakers.length} Patient Units Wi-Fi Linked</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* User Management View (Shows Both Records) Card 1: Doctor Speakers */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--light-green)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Doctor Speakers Record
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--light-green-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Stethoscope size={15} color="var(--light-green)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {doctorSpeakers.length} Unit{doctorSpeakers.length === 1 ? '' : 's'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--light-green)', marginTop: '4px', fontWeight: 600 }}>
+                  Clinical Consultation Rooms
+                </div>
+              </div>
+
+              {/* User Management View Card 2: Patient Speakers */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--sky-blue)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Patient Speakers Record
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--sky-blue-soft)', display: 'grid', placeItems: 'center' }}>
+                    <HeartPulse size={15} color="var(--sky-blue)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)' }}>
+                  {patientSpeakers.length} Unit{patientSpeakers.length === 1 ? '' : 's'}
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--sky-blue)', marginTop: '4px', fontWeight: 600 }}>
+                  Home Care & Bedside Assistants
+                </div>
+              </div>
+
+              {/* User Management View Card 3: Global Hardware Status */}
+              <div style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: '12px',
+                padding: '18px 20px',
+                position: 'relative',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: 'var(--golden-yellow)' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
+                    Total Fleet Hardware
+                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'var(--golden-yellow-soft)', display: 'grid', placeItems: 'center' }}>
+                    <Radio size={15} color="var(--golden-yellow)" />
+                  </div>
+                </div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-pure)', fontFamily: 'var(--display)', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ color: 'var(--light-green)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <span className="live-beacon-online" style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--light-green)', display: 'inline-block' }} />
+                    {speakers.filter(s => s.status === 'online').length} Online
+                  </span>
                   <span style={{ color: 'var(--dim)', fontSize: '14px' }}>•</span>
                   <span style={{ color: 'var(--red)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                     <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--red)', display: 'inline-block' }} />
                     {speakers.filter(s => s.status === 'offline').length} Offline
                   </span>
-                </>
-              )}
-            </div>
-            <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Wifi size={12} color="var(--light-green)" />
-              <span>{speakers.filter(s => s.wifi_connected !== false && s.status !== 'offline').length} of {speakers.length} Wi-Fi Linked (Sub-second Sync)</span>
-            </div>
-          </div>
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--muted)', marginTop: '6px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Wifi size={12} color="var(--light-green)" />
+                  <span>{speakers.length} Total Units Across All Ecosystems</span>
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
-        {/* Search & Filter Toolbar */}
+        {/* Search & Filter Toolbar (Only for Speaker views) */}
+        {currentView !== 'users' && (
         <section style={{
           background: 'var(--panel)',
           border: '1px solid var(--line)',
@@ -2359,6 +2557,7 @@ export default function App() {
             </button>
           </div>
         </section>
+        )}
 
         {/* PANEL 1: DOCTOR ECOSYSTEM VIEW                                            */}
         {/* ========================================================================= */}
@@ -4092,6 +4291,148 @@ export default function App() {
                     <ChevronLast size={16} />
                   </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Enterprise Hardware Speakers Fleet: Both Doctor & Patient Records */}
+            <div style={{ marginTop: '28px', background: 'var(--panel)', border: '1px solid var(--line)', borderRadius: '12px', overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
+              <div style={{ padding: '14px 20px', background: 'var(--panel2)', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '30px', height: '30px', borderRadius: '8px', background: 'rgba(168, 85, 247, 0.15)', display: 'grid', placeItems: 'center' }}>
+                    <Server size={16} color="#c084fc" />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--text-pure)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      ALL REGISTERED HARDWARE SPEAKERS (DOCTOR & PATIENT RECORDS)
+                    </div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--muted)', fontWeight: 500 }}>
+                      Unified hardware inventory: {doctorSpeakers.length} Doctor units &bull; {patientSpeakers.length} Patient units
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '12px', background: 'rgba(168, 85, 247, 0.15)', color: '#c084fc', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
+                    {speakers.length} Total Registered Units
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '12px' }}>
+                  <thead>
+                    <tr style={{ background: 'var(--panel)', borderBottom: '1px solid var(--line)', color: 'var(--muted)', textTransform: 'uppercase', fontSize: '10.5px', letterSpacing: '0.06em' }}>
+                      <th style={{ padding: '12px 16px' }}>Device ID</th>
+                      <th style={{ padding: '12px 16px' }}>Domain / Role</th>
+                      <th style={{ padding: '12px 16px' }}>Assigned User / Practitioner</th>
+                      <th style={{ padding: '12px 16px' }}>Hardware MAC</th>
+                      <th style={{ padding: '12px 16px' }}>Location</th>
+                      <th style={{ padding: '12px 16px' }}>Status</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {speakers.map(spk => (
+                      <tr
+                        key={spk.device_id}
+                        onClick={() => setDetailSpeaker(spk)}
+                        style={{ borderBottom: '1px solid var(--line)', transition: 'background 0.15s', cursor: 'pointer' }}
+                        title="Click row to open deep-dive card view"
+                        className="table-row-hover"
+                      >
+                        <td style={{ padding: '12px 16px', fontWeight: 800, fontFamily: 'var(--mono)' }}>
+                          <span style={{
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            background: spk.role === 'patient' ? 'var(--sky-blue-soft)' : 'var(--light-green-soft)',
+                            color: spk.role === 'patient' ? 'var(--sky-blue)' : 'var(--light-green)',
+                            border: spk.role === 'patient' ? '1px solid var(--sky-blue-border)' : '1px solid var(--light-green-border)',
+                            fontSize: '11.5px'
+                          }}>
+                            {spk.device_id}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span style={{
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '10px',
+                            background: spk.role === 'patient' ? 'var(--sky-blue-soft)' : 'var(--light-green-soft)',
+                            color: spk.role === 'patient' ? 'var(--sky-blue)' : 'var(--light-green)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            {spk.role === 'patient' ? <HeartPulse size={11} /> : <Stethoscope size={11} />}
+                            {spk.role === 'patient' ? 'Patient Bedside' : 'Doctor Clinic'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <div style={{ fontWeight: 700, color: 'var(--text-pure)', fontSize: '12.5px' }}>
+                            {spk.name || (spk.role === 'patient' ? 'Patient Care Unit' : 'Dr. Brij Mohan Makkar')}
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px 16px', fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--muted)' }}>
+                          {spk.mac_address}
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'var(--text-pure)', fontWeight: 600 }}>
+                            <MapPin size={12} color="var(--light-green)" />
+                            <span>{spk.city || 'New Delhi'}</span>
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span
+                            onClick={(e) => { e.stopPropagation(); cycleSpeakerStatus(spk); }}
+                            className={`interactive-mode-pill ${spk.status === 'online' ? 'live-beacon-online' : ''}`}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              padding: '3px 9px',
+                              borderRadius: '12px',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              background: spk.status === 'online' ? 'var(--light-green-soft)' : 'var(--red-soft)',
+                              color: spk.status === 'online' ? 'var(--light-green)' : 'var(--red)',
+                              border: spk.status === 'online' ? '1px solid var(--light-green-border)' : '1px solid var(--red-soft)'
+                            }}
+                            title="Click to toggle status"
+                          >
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: spk.status === 'online' ? 'var(--light-green)' : 'var(--red)' }} />
+                            {spk.status.toUpperCase()}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '6px', alignItems: 'center' }}>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleOpenPingModal(spk); }}
+                              style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--light-green-soft)', border: '1px solid var(--light-green-border)', color: 'var(--light-green)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              title="Audio Verification Ping"
+                            >
+                              <Volume2 size={12} /> Ping
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleViewLogs(spk); }}
+                              style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--panel2)', border: '1px solid var(--line)', color: 'var(--text-pure)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              title="Device Diagnostics & Logs"
+                            >
+                              <FileText size={12} /> Logs
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleOpenControl(spk); }}
+                              style={{ padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, background: 'var(--panel2)', border: '1px solid var(--line)', color: 'var(--golden-yellow)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              title="Remote Control & Volume"
+                            >
+                              <Sliders size={12} /> Control
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
